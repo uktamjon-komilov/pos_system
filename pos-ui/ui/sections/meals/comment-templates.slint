@@ -1,0 +1,64 @@
+// Comment templates of the selected dish: editor card to add one, and the
+// existing templates as removable chips.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Button, ButtonVariant } from "../../components/button.slint";
+import { Card } from "../../components/card.slint";
+import { RemovableChip } from "../../components/removable-chip.slint";
+import { TextArea } from "../../components/text-area.slint";
+import { TextUtils } from "../../components/text-utils.slint";
+import { DishesStore } from "dishes-store.slint";
+
+export component CommentTemplates {
+    VerticalLayout {
+        spacing: Theme.space-8;
+
+        Card {
+            content-padding-top: Theme.space-8;
+            spacing: Theme.space-16;
+
+            TextArea {
+                text <=> DishesStore.comment-draft;
+                placeholder: Strings.comment-placeholder;
+            }
+
+            HorizontalLayout {
+                spacing: Theme.space-10;
+
+                Button {
+                    horizontal-stretch: 1;
+                    text: Strings.comment-reset;
+                    variant: ButtonVariant.white;
+                    loading: DishesStore.is-saving-comment;
+                    clicked => {
+                        DishesStore.comment-draft = "";
+                    }
+                }
+
+                Button {
+                    horizontal-stretch: 1;
+                    text: Strings.comment-add;
+                    variant: ButtonVariant.gold;
+                    loading: DishesStore.is-saving-comment;
+                    enabled: !TextUtils.is-blank(DishesStore.comment-draft);
+                    clicked => {
+                        DishesStore.comment-added(DishesStore.comment-draft);
+                    }
+                }
+            }
+        }
+
+        // Legacy wraps chips in a flex row; Slint 1.16 has no stable wrapping
+        // layout, so each chip takes its own row, sized to its text.
+        for comment in DishesStore.comments: HorizontalLayout {
+            alignment: start;
+            RemovableChip {
+                text: comment.text;
+                remove-clicked => {
+                    DishesStore.comment-deleted(comment.id);
+                }
+            }
+        }
+    }
+}

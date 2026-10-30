@@ -1,0 +1,63 @@
+// Portion count field that opens the numeric keypad under itself on focus.
+// Like legacy, the keypad starts from an empty value each time it opens and
+// replaces the field text with what is typed on it.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { NumericKeypad } from "../../components/numeric-keypad.slint";
+import { TextField } from "../../components/text-field.slint";
+import { TextUtils } from "../../components/text-utils.slint";
+
+export component LimitCountInput {
+    in-out property <string> text;
+    property <string> keypad-text;
+
+    height: field.height;
+
+    field := TextField {
+        width: 100%;
+        text <=> root.text;
+        placeholder: Strings.set-quantity;
+        focus-gained => {
+            root.keypad-text = "";
+            keypad-popup.show();
+        }
+    }
+
+    keypad-popup := PopupWindow {
+        // Right-aligned so it grows to the left: the details column is at
+        // the window's right edge.
+        x: root.width - self.width;
+        y: field.height + Theme.space-4;
+        width: Theme.keypad-min-width + 2 * Theme.space-16;
+        close-policy: PopupClosePolicy.no-auto-close;
+
+        Rectangle {
+            background: Theme.color-raised;
+            border-radius: Theme.radius-8;
+            drop-shadow-blur: Theme.shadow-blur;
+            drop-shadow-offset-y: Theme.shadow-offset;
+            drop-shadow-color: Theme.color-divider;
+        }
+
+        VerticalLayout {
+            padding: Theme.space-16;
+
+            NumericKeypad {
+                done-text: Strings.done;
+                key-pressed(key) => {
+                    root.keypad-text += key;
+                    root.text = root.keypad-text;
+                }
+                backspace-pressed => {
+                    root.keypad-text = TextUtils.drop-last-character(root.keypad-text);
+                    root.text = root.keypad-text;
+                }
+                done-clicked => {
+                    keypad-popup.close();
+                    field.release-focus();
+                }
+            }
+        }
+    }
+}

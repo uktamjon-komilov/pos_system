@@ -1,0 +1,27 @@
+// Four-column grid of category tiles.
+
+import { Theme } from "../../theme.slint";
+import { GridMath } from "../../components/grid-math.slint";
+import { CategoryCard } from "category-card.slint";
+import { CategoryCardData } from "meals-types.slint";
+
+export component CategoryGrid {
+    in property <[CategoryCardData]> categories;
+    callback category-clicked(string);
+
+    property <int> columns: Theme.dish-grid-columns;
+    property <length> gap: Theme.space-4;
+    property <length> cell-width: GridMath.cell-width(root.width, root.columns, root.gap);
+
+    height: GridMath.total-height(root.categories.length, root.columns, Theme.category-card-height, root.gap);
+
+    for category[index] in root.categories: CategoryCard {
+        x: GridMath.cell-x(index, root.columns, root.cell-width, root.gap);
+        y: GridMath.cell-y(index, root.columns, Theme.category-card-height, root.gap);
+        width: root.cell-width;
+        category: category;
+        clicked => {
+            root.category-clicked(category.id);
+        }
+    }
+}

@@ -1,0 +1,98 @@
+// Every user-facing text, in Russian like the legacy default locale.
+// Wrapped in @tr() so a gettext catalog can translate them later without
+// touching any screen. Rust never builds user-facing sentences; it only
+// formats numbers and passes them here.
+
+import { MealsError } from "sections/meals/meals-types.slint";
+
+export global Strings {
+    // ---- Sidebar (legacy common.json) -------------------------------------
+    out property <string> nav-orders: @tr("Счета");
+    out property <string> nav-meals: @tr("Блюда");
+    out property <string> nav-kitchen: @tr("Кухня");
+    out property <string> nav-halls: @tr("Зал");
+    out property <string> nav-cashbox: @tr("Касса");
+    out property <string> nav-settings: @tr("Настройки");
+    out property <string> section-coming-soon: @tr("Раздел в разработке");
+
+    // ---- Meals: navigation ------------------------------------------------
+    out property <string> tab-dishes: @tr("Блюда");
+    out property <string> tab-modifiers: @tr("Модификаторы");
+    out property <string> search-placeholder: @tr("Поиск…");
+
+    // ---- Meals: lists -----------------------------------------------------
+    out property <string> menu: @tr("Меню");
+    out property <string> all-dishes: @tr("Все блюда");
+    out property <string> dish-variants: @tr("Варианты блюд");
+    out property <string> modifiers: @tr("Модификаторы");
+    out property <string> no-dishes: @tr("Нет блюда");
+    out property <string> currency: @tr("сум");
+    out property <string> pieces-short: @tr("шт.");
+
+    // ---- Meals: details ---------------------------------------------------
+    out property <string> dish-not-selected: @tr("Блюдо не выбрано");
+    out property <string> modifier-not-selected: @tr("Модификатор не выбран");
+    out property <string> price: @tr("Стоимость");
+    out property <string> variants: @tr("Варианты");
+    out property <string> not-available: @tr("Отсутствуют");
+    out property <string> dish-info: @tr("Информация о блюде");
+    out property <string> dish-info-short: @tr("Описание блюда, рецепт и калькуляция");
+    out property <string> limit-set: @tr("Установлено");
+    out property <string> limit-left: @tr("Осталось");
+    out property <string> go-list: @tr("Go-лист");
+    out property <string> stop-list: @tr("Стоп лист");
+    out property <string> stop-list-info: @tr("Блюдо добавлено в стоп-лист и будет недоступно для заказа");
+    out property <string> show-modifier: @tr("Показывать модификатор");
+
+    // ---- Meals: limit form ------------------------------------------------
+    out property <string> limit-unlimited: @tr("Лимит / Безлимит");
+    out property <string> unlimited-portions-set: @tr("Установлено бесконечное количество порций");
+    out property <string> set-quantity: @tr("Установить количество");
+    out property <string> cancel: @tr("Отмена");
+    out property <string> save: @tr("Сохранить");
+    out property <string> done: @tr("Готово");
+
+    // ---- Meals: comment templates (hard-coded Russian in legacy) ----------
+    out property <string> comment-placeholder: @tr("Введите новый шаблон комментария");
+    out property <string> comment-reset: @tr("Сбросить");
+    out property <string> comment-add: @tr("Добавить");
+
+    // ---- Meals: errors (legacy shows none in this section) -----------------
+    out property <string> error-load-failed: @tr("Не удалось загрузить данные. Попробуйте ещё раз.");
+    out property <string> error-save-failed: @tr("Не удалось сохранить изменения. Попробуйте ещё раз.");
+    out property <string> error-invalid-limit: @tr("Введите целое число порций");
+
+    // ---- Formatted texts --------------------------------------------------
+    // Legacy has no plural forms here; the same ending is used for every count.
+    public pure function variant-count(count: int) -> string {
+        @tr("{} варианта", count)
+    }
+
+    public pure function dishes-count(count: int) -> string {
+        @tr("{} блюда", count)
+    }
+
+    public pure function no-dishes-in-category(category-name: string) -> string {
+        @tr("В категории \"{}\" нет блюд", category-name)
+    }
+
+    public pure function error-text(error: MealsError) -> string {
+        error == MealsError.load-failed ? error-load-failed
+            : error == MealsError.save-failed ? error-save-failed
+            : error == MealsError.invalid-limit ? error-invalid-limit
+            : ""
+    }
+
+    public pure function price-with-currency(price-text: string) -> string {
+        price-text + " " + currency
+    }
+
+    public pure function pieces(count: int) -> string {
+        count + " " + pieces-short
+    }
+
+    // Kept exactly as legacy: >= 60 minutes says "час" without converting.
+    public pure function cooking-time(minutes: int) -> string {
+        minutes >= 60 ? @tr("{} час", minutes) : @tr("{} минут", minutes)
+    }
+}

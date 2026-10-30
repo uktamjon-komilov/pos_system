@@ -1,0 +1,31 @@
+// Centered illustration with a hint text, for "nothing selected" / "nothing here".
+
+import { Theme } from "../theme.slint";
+
+export component EmptyState inherits Rectangle {
+    in property <image> icon;
+    in property <string> text;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.space-12;
+
+        HorizontalLayout {
+            alignment: center;
+            Image {
+                source: root.icon;
+                width: Theme.icon-size-64;
+                height: Theme.icon-size-64;
+            }
+        }
+
+        Text {
+            text: root.text;
+            font-size: Theme.font-size-subheader-3;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-hint;
+            horizontal-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

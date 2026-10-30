@@ -1,0 +1,26 @@
+[package]
+name = "pos-ui"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+description = "Jowi POS desktop UI (Slint), backed by a swappable repository"
+publish = false
+
+[dependencies]
+# The UI toolkit. 1.16 is the newest line whose MSRV (1.88) matches the
+# installed stable toolchain.
+slint = "1.16"
+# Only `oneshot`: lets a UI-thread future await the result of a worker thread
+# without pulling in a full async runtime.
+futures-channel = "0.3"
+
+[build-dependencies]
+# Compiles the .slint files into Rust at build time.
+slint-build = "1.16"
+
+[dev-dependencies]
+# Element queries (size, position) for the headless layout check in
+# src/layout_snapshots.rs. Internal Slint crate: must match slint exactly.
+i-slint-backend-testing = "=1.16.1"
+# Writes that check's screenshots; already in the tree through slint.
+png = "0.18"

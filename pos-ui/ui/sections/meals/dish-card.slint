@@ -1,0 +1,105 @@
+// Tile of a dish or variant in the menu grid: name, price and status badges.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Badge } from "../../components/badge.slint";
+import { PillLabel } from "../../components/pill-label.slint";
+import { SelectionOutline } from "../../components/selection-outline.slint";
+import { DishCardData } from "meals-types.slint";
+
+export component DishCard inherits Rectangle {
+    in property <DishCardData> dish;
+    in property <bool> selected;
+    callback clicked();
+
+    property <bool> has-badges: root.dish.is-in-go-list || root.dish.is-in-stop-list
+        || root.dish.limit-count > 0 || root.dish.cooking-minutes > 0;
+
+    height: Theme.dish-card-height;
+    background: Theme.color-card;
+    border-width: Theme.border-dish-card;
+    border-color: Theme.color-card-border;
+    border-radius: Theme.radius-30;
+    transform-scale-x: touch.pressed ? Theme.pressed-scale : 100%;
+    transform-scale-y: self.transform-scale-x;
+    animate transform-scale-x { duration: Theme.duration-press; }
+
+    if root.selected: SelectionOutline {
+        target-width: root.width;
+        target-height: root.height;
+        corner-radius: Theme.radius-30;
+    }
+
+    VerticalLayout {
+        // CSS padding sits inside the border, so the border adds to it here.
+        padding: Theme.border-dish-card + Theme.space-16;
+        spacing: Theme.space-16;
+
+        VerticalLayout {
+            vertical-stretch: 1;
+            spacing: Theme.space-4;
+
+            if !root.dish.is-variant && root.dish.variant-count > 0: Text {
+                text: Strings.variant-count(root.dish.variant-count);
+                font-size: Theme.font-size-body-1;
+                color: Theme.color-text-primary;
+            }
+
+            Text {
+                vertical-stretch: 1;
+                min-height: 0px;
+                text: root.dish.title;
+                font-size: Theme.font-size-dish-name;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+                overflow: elide;
+            }
+        }
+
+        VerticalLayout {
+            vertical-stretch: 0;
+            spacing: Theme.space-4;
+
+            Text {
+                text: Strings.price-with-currency(root.dish.price-text);
+                font-size: Theme.font-size-subheader-3;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+            }
+
+            if root.has-badges: HorizontalLayout {
+                alignment: start;
+                spacing: Theme.space-4;
+                height: Theme.pill-height;
+
+                if root.dish.is-in-go-list: Badge {
+                    icon: @image-url("../../../assets/icons/thunderbolt-fill.svg");
+                    content-color: Theme.color-text-icon-black;
+                }
+
+                if root.dish.is-in-stop-list: Badge {
+                    icon: @image-url("../../../assets/icons/xmark.svg");
+                    background: Theme.color-danger;
+                    content-color: Theme.color-text-inverted;
+                    radius: Theme.radius-4;
+                }
+
+                if root.dish.limit-count > 0: Badge {
+                    text: Strings.pieces(root.dish.limit-count);
+                }
+
+                if root.dish.cooking-minutes > 0: PillLabel {
+                    icon: @image-url("../../../assets/icons/clock.svg");
+                    text: Strings.cooking-time(root.dish.cooking-minutes);
+                }
+            }
+        }
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}

@@ -1,0 +1,34 @@
+// Background of "metallic" controls (buttons, inputs, segmented control):
+// fill, thin border and the legacy double shadow — dark towards bottom-right,
+// light towards top-left. Slint draws one shadow per rectangle, hence two.
+// Place it as the first child; like any Rectangle it fills its parent.
+
+import { Theme } from "../theme.slint";
+
+export component MetallicSurface inherits Rectangle {
+    in property <brush> fill: Theme.color-card;
+    in property <brush> outline-color: Theme.color-card-border;
+    in property <length> outline-width: Theme.border-thin;
+    in property <length> corner-radius: Theme.radius-16;
+    in property <bool> has-shadow: true;
+
+    Rectangle {
+        border-radius: root.corner-radius;
+        background: root.fill;
+        drop-shadow-offset-x: Theme.shadow-offset;
+        drop-shadow-offset-y: Theme.shadow-offset;
+        drop-shadow-blur: Theme.shadow-blur;
+        drop-shadow-color: root.has-shadow ? Theme.color-shadow-dark : Colors.transparent;
+    }
+
+    Rectangle {
+        border-radius: root.corner-radius;
+        background: root.fill;
+        border-width: root.outline-width;
+        border-color: root.outline-color;
+        drop-shadow-offset-x: -Theme.shadow-offset;
+        drop-shadow-offset-y: -Theme.shadow-offset;
+        drop-shadow-blur: Theme.shadow-blur;
+        drop-shadow-color: root.has-shadow ? Theme.color-shadow-light : Colors.transparent;
+    }
+}

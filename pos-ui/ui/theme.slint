@@ -1,0 +1,180 @@
+// Design tokens: every color, font size, spacing, radius and fixed size used
+// by the UI. Values are the legacy app's CSS values (Gravity UI + "metallic"
+// kit), written in logical px.
+//
+// WHY plain logical px: Slint multiplies logical px by each monitor's scale
+// factor (Windows display zoom 100 %, 125 %, 150 %, ...) and renders at the
+// native resolution, so text and lines stay sharp everywhere. The app must
+// never apply a scale of its own on top of that.
+
+export global Theme {
+    // ---- Colors: surfaces -------------------------------------------------
+    out property <color> color-display: #1A1A1A;
+    out property <color> color-panel: #C2C2C2;
+    out property <color> color-panel-border: #6B849926;
+    out property <color> color-surface: #DFDFDF;
+    out property <color> color-card: #EEEEEE;
+    out property <color> color-card-border: #C2C2C2;
+    out property <color> color-raised: #FFFFFF;
+    out property <color> color-raised-hover: #F2F2F2;
+    out property <color> color-filled-card: #0000000D;
+    out property <color> color-hover-overlay: #0000000D;
+
+    // ---- Colors: text -----------------------------------------------------
+    out property <color> color-text-primary: #000000D9;
+    out property <color> color-text-complementary: #000000B3;
+    out property <color> color-text-secondary: #00000080;
+    out property <color> color-text-hint: #0000004D;
+    out property <color> color-text-inverted: #FFFFFF;
+    out property <color> color-text-brand: #BD8E4B;
+    out property <color> color-text-warning: #BD5C0A;
+    out property <color> color-text-icon-black: #000000;
+
+    // ---- Colors: lines ----------------------------------------------------
+    out property <color> color-divider: #0000001A;
+    out property <color> color-section-line: #7E7E7E;
+    out property <color> color-engrave-highlight: #FFFFFF;
+    out property <color> color-pill-border: #7F7F7F;
+    out property <color> color-selected-outline: #2D2D2D;
+
+    // ---- Colors: status ---------------------------------------------------
+    out property <color> color-danger: #E9033A;
+    out property <color> color-modifier-stop: #844DBB;
+    out property <color> color-tile-dark: #000000D9;
+    out property <color> color-tile-muted: #0000000D;
+    out property <color> color-label-neutral: #0000000D;
+    out property <color> color-warning-background: #FFBE5C4D;
+    out property <color> color-brand: #FFBE5C;
+    out property <color> color-brand-hover: #E7AD55;
+
+    // ---- Colors: metallic gradients and shadows ---------------------------
+    out property <brush> gradient-gold: @linear-gradient(180deg, #FFBE5C 0%, #B37922 100%);
+    out property <color> color-gold-border: #BD8E4B;
+    out property <brush> gradient-green: @linear-gradient(180deg, #30AA6E 0%, #24A163 100%);
+    out property <color> color-green-border: #2D8B5D;
+    out property <color> color-shadow-dark: #0000000D;
+    out property <color> color-shadow-light: #FFFFFF80;
+
+    // ---- Colors: switch, sidebar, keypad ----------------------------------
+    out property <color> color-switch-off: #00000026;
+    out property <color> color-switch-off-hover: #00000040;
+    out property <color> color-switch-knob: #FFFFFF;
+    out property <color> color-sidebar-text: #FFFFFFBF;
+    out property <color> color-sidebar-text-active: #FFFFFF;
+    out property <color> color-sidebar-active-background: #FFFFFF26;
+    out property <color> color-sidebar-active-border: #FFFFFF4D;
+    out property <color> color-keypad-key-hover: #C2C2C2;
+    out property <color> color-keypad-line: #0000001A;
+    out property <color> color-segment-text: #000000B2;
+
+    // ---- Typography (Gravity UI variants) ---------------------------------
+    out property <string> font-family: "Inter";
+    out property <int> font-weight-regular: 400;
+    out property <int> font-weight-semibold: 600;
+    out property <length> font-size-caption-1: 9px;
+    out property <length> font-size-caption-2: 11px;
+    out property <length> font-size-body-1: 13px;
+    out property <length> font-size-body-2: 15px;
+    out property <length> font-size-subheader-1: 13px;
+    out property <length> font-size-subheader-3: 17px;
+    out property <length> font-size-header-1: 20px;
+    out property <length> font-size-header-2: 24px;
+    out property <length> font-size-dish-name: 16px;
+    out property <length> font-size-category-name: 18px;
+
+    // ---- Spacing (legacy Tailwind gaps / paddings) ------------------------
+    out property <length> space-1: 1px;
+    out property <length> space-2: 2px;
+    out property <length> space-3: 3px;
+    out property <length> space-4: 4px;
+    out property <length> space-8: 8px;
+    out property <length> space-10: 10px;
+    out property <length> space-12: 12px;
+    out property <length> space-16: 16px;
+    out property <length> space-20: 20px;
+    out property <length> space-24: 24px;
+    out property <length> space-25: 25px;
+    out property <length> space-28: 28px;
+
+    // ---- Radii ------------------------------------------------------------
+    out property <length> radius-3: 3px;
+    out property <length> radius-4: 4px;
+    out property <length> radius-6: 6px;
+    out property <length> radius-8: 8px;
+    out property <length> radius-10: 10px;
+    out property <length> radius-12: 12px;
+    out property <length> radius-16: 16px;
+    out property <length> radius-17: 17px;
+    out property <length> radius-24: 24px;
+    out property <length> radius-30: 30px;
+
+    // ---- Borders and shadows ----------------------------------------------
+    out property <length> border-thin: 1px;
+    out property <length> border-outline: 3px;
+    out property <length> border-dish-card: 6px;
+    out property <length> shadow-offset: 2px;
+    out property <length> shadow-blur: 4px;
+
+    // ---- Icon sizes -------------------------------------------------------
+    out property <length> icon-size-12: 12px;
+    out property <length> icon-size-16: 16px;
+    out property <length> icon-size-20: 20px;
+    out property <length> icon-size-64: 64px;
+    out property <length> logo-width: 68px;
+    out property <length> logo-height: 18px;
+
+    // ---- Fixed component sizes --------------------------------------------
+    // Gravity "xl" controls are 44 px high: the legacy touch target size.
+    out property <length> control-height-xl: 44px;
+    out property <length> control-height-form: 38px;
+    out property <length> control-height-flat: 28px;
+    out property <length> label-height: 20px;
+    out property <length> pill-height: 22px;
+    out property <length> icon-tile-size: 32px;
+    out property <length> switch-width: 56px;
+    out property <length> switch-height: 32px;
+    out property <length> switch-knob-size: 26px;
+    out property <length> switch-knob-inset: 3px;
+    out property <length> keypad-key-height: 72px;
+    out property <length> keypad-min-width: 400px;
+    out property <length> sidebar-width: 104px;
+    out property <length> sidebar-item-height: 64px;
+    out property <length> sidebar-logo-row-height: 53px;
+    out property <length> dish-card-height: 200px;
+    // Category cards grow to their content in legacy; rows end up as tall as
+    // a card with a two-line name, so that height is used for every card.
+    // (114 in legacy CSS; Slint has no line-height, Inter's own is taller.)
+    out property <length> category-card-height: 122px;
+    out property <length> list-loader-height: 80px;
+    out property <length> comment-input-height: 72px;
+
+    // ---- Layout ratios and breakpoints ------------------------------------
+    out property <float> list-column-ratio: 0.75;
+    out property <int> dish-grid-columns: 4;
+    // Legacy Tailwind breakpoints for the modifier grid, measured on the
+    // whole window: >= 1800 → 6 columns, >= 1536 → 5, otherwise 4.
+    out property <length> modifier-breakpoint-wide: 1800px;
+    out property <length> modifier-breakpoint-medium: 1536px;
+    out property <int> modifier-grid-columns-wide: 6;
+    out property <int> modifier-grid-columns-medium: 5;
+    out property <int> modifier-grid-columns-narrow: 4;
+
+    // ---- Window -----------------------------------------------------------
+    // Legacy dev window size (production runs full screen).
+    out property <length> window-default-width: 1346px;
+    out property <length> window-default-height: 1010px;
+    // Logical px: the smallest size the meals layout fits, checked by the
+    // layout_snapshots test. Equals a 1920x1080 screen at 150 % Windows zoom;
+    // higher zooms on that screen (175 % = 1097x617) are below it.
+    out property <length> window-min-width: 1280px;
+    out property <length> window-min-height: 720px;
+
+    // ---- Motion -----------------------------------------------------------
+    out property <duration> duration-press: 75ms;
+    out property <duration> duration-hover: 150ms;
+    out property <duration> duration-slide: 300ms;
+    out property <duration> duration-loader-cycle: 900ms;
+    out property <percent> pressed-scale: 95%;
+    // Large cards press in less (legacy `active:scale-[.98]`).
+    out property <percent> pressed-scale-card: 98%;
+}

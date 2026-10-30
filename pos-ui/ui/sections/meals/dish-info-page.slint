@@ -1,0 +1,65 @@
+// "Информация о блюде": dish name and description, with a close button.
+// Legacy also has recipe and calculation blocks, but they are switched off
+// there (`false &&`), so they are not ported.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Button, ButtonVariant } from "../../components/button.slint";
+import { Divider } from "../../components/divider.slint";
+import { DishesStore } from "dishes-store.slint";
+
+export component DishInfoPage inherits Rectangle {
+    callback close-requested();
+
+    VerticalLayout {
+        alignment: start;
+
+        HorizontalLayout {
+            padding: Theme.space-16;
+            spacing: Theme.space-16;
+
+            Text {
+                horizontal-stretch: 1;
+                text: Strings.dish-info;
+                font-size: Theme.font-size-header-2;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                vertical-alignment: center;
+                wrap: word-wrap;
+            }
+
+            Button {
+                variant: ButtonVariant.white;
+                icon: @image-url("../../../assets/icons/xmark.svg");
+                clicked => {
+                    root.close-requested();
+                }
+            }
+        }
+
+        Divider {
+            color: Theme.color-section-line;
+            engraved: true;
+        }
+
+        VerticalLayout {
+            padding: Theme.space-16;
+            spacing: Theme.space-8;
+
+            Text {
+                text: DishesStore.details.name;
+                font-size: Theme.font-size-header-2;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: DishesStore.details.description;
+                font-size: Theme.font-size-body-2;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

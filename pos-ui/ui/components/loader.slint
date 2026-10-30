@@ -1,0 +1,25 @@
+// Activity indicator: three bars pulsing in turn, like the Gravity UI Loader.
+
+import { Theme } from "../theme.slint";
+
+export component Loader inherits Rectangle {
+    in property <length> bar-width: Theme.space-4;
+    in property <length> bar-height: Theme.space-16;
+    in property <color> bar-color: Theme.color-text-hint;
+
+    HorizontalLayout {
+        alignment: center;
+        spacing: Theme.space-3;
+        for bar-index in 3: VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: root.bar-width;
+                height: root.bar-height;
+                border-radius: root.bar-width / 2;
+                background: root.bar-color;
+                // Each bar peaks one third of a cycle after the previous one.
+                opacity: 0.3 + 0.7 * abs(sin(360deg * (animation-tick() / Theme.duration-loader-cycle + bar-index / 3)));
+            }
+        }
+    }
+}

@@ -1,0 +1,29 @@
+// Four-column grid of dish (or variant) tiles with one highlighted tile.
+
+import { Theme } from "../../theme.slint";
+import { GridMath } from "../../components/grid-math.slint";
+import { DishCard } from "dish-card.slint";
+import { DishCardData } from "meals-types.slint";
+
+export component DishGrid {
+    in property <[DishCardData]> dishes;
+    in property <string> selected-id;
+    callback dish-clicked(string);
+
+    property <int> columns: Theme.dish-grid-columns;
+    property <length> gap: Theme.space-4;
+    property <length> cell-width: GridMath.cell-width(root.width, root.columns, root.gap);
+
+    height: GridMath.total-height(root.dishes.length, root.columns, Theme.dish-card-height, root.gap);
+
+    for dish[index] in root.dishes: DishCard {
+        x: GridMath.cell-x(index, root.columns, root.cell-width, root.gap);
+        y: GridMath.cell-y(index, root.columns, Theme.dish-card-height, root.gap);
+        width: root.cell-width;
+        dish: dish;
+        selected: dish.id == root.selected-id;
+        clicked => {
+            root.dish-clicked(dish.id);
+        }
+    }
+}

@@ -1,0 +1,56 @@
+// One entry of the dark sidebar: icon above a tiny caption.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "../components/icon.slint";
+
+// Same order as the legacy sidebar (which also has sections not ported yet).
+export enum Section { orders, halls, kitchen, meals, cashbox, settings }
+
+export struct NavItem {
+    section: Section,
+    label: string,
+    icon: image,
+}
+
+export component SidebarItem inherits Rectangle {
+    in property <NavItem> item;
+    in property <bool> active;
+    callback clicked();
+
+    property <bool> is-highlighted: root.active || touch.has-hover;
+    property <color> content-color: root.is-highlighted ? Theme.color-sidebar-text-active : Theme.color-sidebar-text;
+
+    height: Theme.sidebar-item-height;
+    border-radius: Theme.radius-12;
+    border-width: Theme.border-thin;
+    border-color: root.is-highlighted ? Theme.color-sidebar-active-border : Colors.transparent;
+    background: root.is-highlighted ? Theme.color-sidebar-active-background : Colors.transparent;
+    animate background, border-color { duration: Theme.duration-hover; }
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.space-8;
+
+        HorizontalLayout {
+            alignment: center;
+            Icon {
+                source: root.item.icon;
+                size: Theme.icon-size-20;
+                color: root.content-color;
+            }
+        }
+
+        Text {
+            text: root.item.label;
+            font-size: Theme.font-size-caption-1;
+            color: root.content-color;
+            horizontal-alignment: center;
+        }
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}

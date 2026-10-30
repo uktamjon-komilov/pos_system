@@ -1,0 +1,44 @@
+// Row of mutually exclusive options; the selected one sits on a raised plate
+// (legacy metallic SegmentedControl, "light" variant).
+
+import { Theme } from "../theme.slint";
+import { MetallicSurface } from "metallic-surface.slint";
+
+export component SegmentedControl {
+    in property <[string]> options;
+    in property <int> selected-index;
+    callback selected(int);
+
+    height: Theme.control-height-xl;
+
+    MetallicSurface { }
+
+    HorizontalLayout {
+        for option[option-index] in root.options: option-cell := Rectangle {
+            property <bool> is-selected: option-index == root.selected-index;
+            min-width: label.preferred-width + 2 * Theme.space-25;
+
+            if option-cell.is-selected: Rectangle {
+                background: Theme.color-surface;
+                border-radius: Theme.radius-12;
+                border-width: Theme.border-thin;
+                border-color: Theme.color-pill-border;
+            }
+
+            label := Text {
+                text: option;
+                font-size: Theme.font-size-body-2;
+                font-weight: Theme.font-weight-semibold;
+                color: option-cell.is-selected ? Theme.color-text-primary : Theme.color-segment-text;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+
+            TouchArea {
+                clicked => {
+                    root.selected(option-index);
+                }
+            }
+        }
+    }
+}

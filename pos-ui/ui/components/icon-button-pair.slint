@@ -1,0 +1,49 @@
+// Two square icon buttons joined into one pill (legacy back / forward pair):
+// one shared metallic background, no border between the halves.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+import { MetallicSurface } from "metallic-surface.slint";
+
+export component IconButtonPair {
+    in property <image> first-icon;
+    in property <image> second-icon;
+    in property <bool> first-enabled: true;
+    in property <bool> second-enabled: true;
+    callback first-clicked();
+    callback second-clicked();
+
+    height: Theme.control-height-xl;
+    width: 2 * self.height;
+
+    MetallicSurface { }
+
+    HorizontalLayout {
+        for half-index in 2: Rectangle {
+            property <bool> is-first: half-index == 0;
+            property <bool> is-enabled: self.is-first ? root.first-enabled : root.second-enabled;
+            border-top-left-radius: self.is-first ? Theme.radius-16 : 0;
+            border-bottom-left-radius: self.is-first ? Theme.radius-16 : 0;
+            border-top-right-radius: self.is-first ? 0 : Theme.radius-16;
+            border-bottom-right-radius: self.is-first ? 0 : Theme.radius-16;
+            background: half-touch.has-hover && self.is-enabled ? Theme.color-hover-overlay : Colors.transparent;
+
+            Icon {
+                source: parent.is-first ? root.first-icon : root.second-icon;
+                size: Theme.icon-size-20;
+                color: parent.is-enabled ? Theme.color-text-primary : Theme.color-text-hint;
+            }
+
+            half-touch := TouchArea {
+                enabled: parent.is-enabled;
+                clicked => {
+                    if parent.is-first {
+                        root.first-clicked();
+                    } else {
+                        root.second-clicked();
+                    }
+                }
+            }
+        }
+    }
+}

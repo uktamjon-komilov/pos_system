@@ -1,0 +1,87 @@
+// The meals ("Блюда") section: list column on the left (75%), details
+// column on the right, for whichever tab — dishes or modifiers — is active.
+
+import { Theme } from "../../theme.slint";
+import { Alert } from "../../components/alert.slint";
+import { DishDetails } from "dish-details.slint";
+import { DishList } from "dish-list.slint";
+import { DishesStore } from "dishes-store.slint";
+import { MealsStore } from "meals-store.slint";
+import { MealsError, MealsTab } from "meals-types.slint";
+import { ModifierDetails } from "modifier-details.slint";
+import { ModifierList } from "modifier-list.slint";
+import { ModifiersStore } from "modifiers-store.slint";
+import { TopNavigation } from "top-navigation.slint";
+
+export component MealsPage inherits Rectangle {
+    // Needed for the modifier grid, whose columns follow the window width.
+    in property <length> window-width;
+
+    property <bool> shows-dishes: MealsStore.active-tab == MealsTab.dishes;
+
+    // The page is created each time the section is opened from the sidebar.
+    init => {
+        MealsStore.opened();
+    }
+
+    // Columns are placed by hand: a layout would make the 75% width depend
+    // on itself (the page's size comes from the frame around it).
+    list-column := VerticalLayout {
+        x: 0;
+        y: 0;
+        width: root.width * Theme.list-column-ratio;
+        height: root.height;
+        spacing: Theme.space-16;
+
+        TopNavigation { }
+
+        // Load errors here; save and limit errors in the details column.
+        if root.shows-dishes && DishesStore.error == MealsError.load-failed: Alert {
+            text: DishesStore.error-text;
+            font-size: Theme.font-size-body-1;
+        }
+
+        if !root.shows-dishes && ModifiersStore.error == MealsError.load-failed: Alert {
+            text: ModifiersStore.error-text;
+            font-size: Theme.font-size-body-1;
+        }
+
+        if root.shows-dishes: DishList {
+            vertical-stretch: 1;
+        }
+
+        if !root.shows-dishes: ModifierList {
+            vertical-stretch: 1;
+            window-width: root.window-width;
+        }
+    }
+
+    details-column := Rectangle {
+        x: list-column.width + Theme.space-1;
+        y: 0;
+        width: root.width - self.x;
+        height: root.height;
+        background: Theme.color-surface;
+
+        property <MealsError> error: root.shows-dishes ? DishesStore.error : ModifiersStore.error;
+
+        VerticalLayout {
+            // Next to the form and switches that caused them.
+            if details-column.error != MealsError.none && details-column.error != MealsError.load-failed: HorizontalLayout {
+                padding: Theme.space-16;
+                padding-bottom: 0;
+                Alert {
+                    text: root.shows-dishes ? DishesStore.error-text : ModifiersStore.error-text;
+                    font-size: Theme.font-size-body-1;
+                }
+            }
+
+            if root.shows-dishes: DishDetails {
+                vertical-stretch: 1;
+            }
+            if !root.shows-dishes: ModifierDetails {
+                vertical-stretch: 1;
+            }
+        }
+    }
+}

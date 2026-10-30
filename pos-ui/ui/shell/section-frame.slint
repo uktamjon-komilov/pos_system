@@ -1,0 +1,21 @@
+// Rounded light panel to the right of the sidebar that hosts the current section.
+
+import { Theme } from "../theme.slint";
+
+export component SectionFrame {
+    VerticalLayout {
+        padding-top: Theme.space-20;
+        padding-bottom: Theme.space-20;
+        padding-right: Theme.space-20;
+
+        Rectangle {
+            background: Theme.color-panel;
+            border-radius: Theme.radius-24;
+            border-width: Theme.border-thin;
+            border-color: Theme.color-panel-border;
+            clip: true;
+
+            @children
+        }
+    }
+}

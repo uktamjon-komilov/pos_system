@@ -1,0 +1,83 @@
+// Main window: registers the fonts, lays out sidebar + section frame, and
+// switches sections. Also re-exports every global and struct Rust talks to.
+
+import "../assets/fonts/Inter-Regular.ttf";
+import "../assets/fonts/Inter-SemiBold.ttf";
+
+import { Theme } from "theme.slint";
+import { Strings } from "strings.slint";
+import { TextUtils } from "components/text-utils.slint";
+import { SectionFrame } from "shell/section-frame.slint";
+import { Sidebar } from "shell/sidebar.slint";
+import { NavItem, Section } from "shell/sidebar-item.slint";
+import { SectionPlaceholder } from "sections/section-placeholder.slint";
+import { MealsPage } from "sections/meals/meals-page.slint";
+import { DishesStore } from "sections/meals/dishes-store.slint";
+import { MealsStore } from "sections/meals/meals-store.slint";
+import { ModifiersStore } from "sections/meals/modifiers-store.slint";
+import {
+    CategoryCardData, CommentData, DishCardData, DishDetailsData, MealsError, MealsTab,
+    ModifierCardData, ModifierDetailsData,
+} from "sections/meals/meals-types.slint";
+
+export { TextUtils, DishesStore, MealsStore, ModifiersStore }
+export {
+    CategoryCardData, CommentData, DishCardData, DishDetailsData, MealsError, MealsTab,
+    ModifierCardData, ModifierDetailsData,
+}
+
+export component AppWindow inherits Window {
+    title: "Jowi POS";
+    preferred-width: Theme.window-default-width;
+    preferred-height: Theme.window-default-height;
+    min-width: Theme.window-min-width;
+    min-height: Theme.window-min-height;
+    background: Theme.color-display;
+    default-font-family: Theme.font-family;
+    default-font-size: Theme.font-size-body-1;
+
+    // Meals is the only section that is ported.
+    in-out property <Section> active-section: Section.meals;
+
+    property <[NavItem]> nav-items: [
+        { section: Section.orders, label: Strings.nav-orders, icon: @image-url("../assets/icons/square-list-ul.svg") },
+        { section: Section.halls, label: Strings.nav-halls, icon: @image-url("../assets/icons/hall.svg") },
+        { section: Section.kitchen, label: Strings.nav-kitchen, icon: @image-url("../assets/icons/kitchen.svg") },
+        { section: Section.meals, label: Strings.nav-meals, icon: @image-url("../assets/icons/dish-light.svg") },
+        { section: Section.cashbox, label: Strings.nav-cashbox, icon: @image-url("../assets/icons/circle-dollar.svg") },
+        { section: Section.settings, label: Strings.nav-settings, icon: @image-url("../assets/icons/gear.svg") },
+    ];
+
+    HorizontalLayout {
+        Sidebar {
+            items: root.nav-items;
+            active-section: root.active-section;
+            item-selected(section) => {
+                root.active-section = section;
+            }
+        }
+
+        SectionFrame {
+            horizontal-stretch: 1;
+
+            if root.active-section == Section.orders: SectionPlaceholder {
+                title: Strings.nav-orders;
+            }
+            if root.active-section == Section.halls: SectionPlaceholder {
+                title: Strings.nav-halls;
+            }
+            if root.active-section == Section.kitchen: SectionPlaceholder {
+                title: Strings.nav-kitchen;
+            }
+            if root.active-section == Section.meals: MealsPage {
+                window-width: root.width;
+            }
+            if root.active-section == Section.cashbox: SectionPlaceholder {
+                title: Strings.nav-cashbox;
+            }
+            if root.active-section == Section.settings: SectionPlaceholder {
+                title: Strings.nav-settings;
+            }
+        }
+    }
+}

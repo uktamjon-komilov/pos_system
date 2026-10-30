@@ -1,0 +1,55 @@
+// Small card with a text and a round "x" that asks for its removal.
+
+import { Theme } from "../theme.slint";
+import { Card } from "card.slint";
+import { Icon } from "icon.slint";
+
+export component RemovableChip inherits Card {
+    in property <string> text;
+    callback remove-clicked();
+
+    content-padding-top: Theme.space-8;
+    content-padding-bottom: Theme.space-8;
+    content-padding-left: Theme.space-12;
+    content-padding-right: Theme.space-12;
+    border-radius: Theme.radius-12;
+    has-shadow: false;
+
+    HorizontalLayout {
+        spacing: Theme.space-12;
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.text;
+            font-size: Theme.font-size-body-1;
+            color: Theme.color-text-complementary;
+            vertical-alignment: center;
+            wrap: word-wrap;
+        }
+
+        VerticalLayout {
+            alignment: center;
+            Rectangle {
+                width: Theme.icon-size-16;
+                height: Theme.icon-size-16;
+
+                Icon {
+                    source: @image-url("../../assets/icons/circle-xmark-fill.svg");
+                    size: Theme.icon-size-16;
+                    color: touch.has-hover ? Theme.color-text-primary : Theme.color-text-complementary;
+                }
+
+                touch := TouchArea {
+                    // Enlarged hit area: the icon alone is too small for a finger.
+                    x: -Theme.space-8;
+                    y: -Theme.space-8;
+                    width: parent.width + 2 * Theme.space-8;
+                    height: parent.height + 2 * Theme.space-8;
+                    clicked => {
+                        root.remove-clicked();
+                    }
+                }
+            }
+        }
+    }
+}

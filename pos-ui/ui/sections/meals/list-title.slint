@@ -1,0 +1,10 @@
+// Heading above a grid in the meals lists ("Меню", "Все блюда", ...).
+
+import { Theme } from "../../theme.slint";
+
+export component ListTitle inherits Text {
+    font-size: Theme.font-size-header-2;
+    font-weight: Theme.font-weight-semibold;
+    color: Theme.color-text-complementary;
+    wrap: word-wrap;
+}

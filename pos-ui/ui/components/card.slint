@@ -1,0 +1,47 @@
+// Rounded "metallic" container that stacks its children vertically.
+// Legacy cards keep only the light top-left shadow (their CSS overrides the
+// dark one), so one rectangle with one shadow is enough here.
+// With `pressable`, the whole card is one touch target (children placed in a
+// card become layout rows, so they cannot cover it themselves).
+
+import { Theme } from "../theme.slint";
+
+export component Card inherits Rectangle {
+    in property <length> content-padding: Theme.space-16;
+    in property <length> content-padding-top: root.content-padding;
+    in property <length> content-padding-bottom: root.content-padding;
+    in property <length> content-padding-left: root.content-padding;
+    in property <length> content-padding-right: root.content-padding;
+    in property <length> spacing;
+    in property <bool> has-shadow: true;
+    in property <bool> pressable: false;
+    callback clicked();
+
+    background: Theme.color-card;
+    border-width: Theme.border-thin;
+    border-color: Theme.color-card-border;
+    border-radius: Theme.radius-24;
+    drop-shadow-offset-x: -Theme.shadow-offset;
+    drop-shadow-offset-y: -Theme.shadow-offset;
+    drop-shadow-blur: Theme.shadow-blur;
+    drop-shadow-color: root.has-shadow ? Theme.color-shadow-light : Colors.transparent;
+    transform-scale-x: touch.pressed ? Theme.pressed-scale-card : 100%;
+    transform-scale-y: self.transform-scale-x;
+    animate transform-scale-x { duration: Theme.duration-press; }
+
+    VerticalLayout {
+        padding-top: root.content-padding-top;
+        padding-bottom: root.content-padding-bottom;
+        padding-left: root.content-padding-left;
+        padding-right: root.content-padding-right;
+        spacing: root.spacing;
+        @children
+    }
+
+    touch := TouchArea {
+        enabled: root.pressable;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

@@ -1,0 +1,25 @@
+// State and events of the modifiers tab. Rust (controllers/modifiers/)
+// fills the properties and implements the callbacks.
+
+import { Strings } from "../../strings.slint";
+import { MealsError, ModifierCardData, ModifierDetailsData } from "meals-types.slint";
+
+export global ModifiersStore {
+    in property <[ModifierCardData]> modifiers;
+    in property <bool> is-loading;
+    in property <bool> has-selection;
+    in property <string> selected-id;
+    in property <ModifierDetailsData> details;
+    in-out property <bool> is-editing-limit;
+    // A stop-list or limit change is being saved.
+    in property <bool> is-saving-stock;
+    // Set by Rust when a request or the limit input fails; cleared on the
+    // next action.
+    in-out property <MealsError> error;
+    out property <string> error-text: Strings.error-text(error);
+
+    callback modifier-clicked(string);
+    callback stop-list-toggled(bool);
+    // (unlimited, count text as typed)
+    callback limit-saved(bool, string);
+}

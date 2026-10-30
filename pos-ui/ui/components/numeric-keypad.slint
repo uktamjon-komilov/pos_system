@@ -1,0 +1,93 @@
+// Touch keypad from the legacy NumericKeyboard: 1–9, ".", 0, backspace and a
+// "done" button. It only reports key presses; the owner keeps the text.
+
+import { Theme } from "../theme.slint";
+import { Button, ButtonVariant } from "button.slint";
+import { Icon } from "icon.slint";
+
+component KeypadKey inherits Rectangle {
+    in property <string> label;
+    in property <bool> is-backspace;
+    in property <bool> has-right-line;
+    in property <bool> has-bottom-line;
+    callback pressed();
+
+    height: Theme.keypad-key-height;
+    background: touch.has-hover ? Theme.color-keypad-key-hover : Colors.transparent;
+
+    if !root.is-backspace: Text {
+        text: root.label;
+        font-size: Theme.font-size-header-2;
+        font-weight: Theme.font-weight-semibold;
+        color: Theme.color-text-primary;
+    }
+
+    if root.is-backspace: Icon {
+        source: @image-url("../../assets/icons/arrow-left.svg");
+        size: Theme.icon-size-20;
+    }
+
+    if root.has-right-line: Rectangle {
+        x: parent.width - self.width;
+        width: Theme.border-thin;
+        background: Theme.color-keypad-line;
+    }
+
+    if root.has-bottom-line: Rectangle {
+        y: parent.height - self.height;
+        height: Theme.border-thin;
+        background: Theme.color-keypad-line;
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.pressed();
+        }
+    }
+}
+
+export component NumericKeypad {
+    in property <string> done-text;
+    callback key-pressed(string);
+    callback backspace-pressed();
+    callback done-clicked();
+
+    property <[string]> keys: ["1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "0", ""];
+    property <int> columns: 3;
+    property <int> rows: 4;
+
+    min-width: Theme.keypad-min-width;
+
+    VerticalLayout {
+        spacing: Theme.space-16;
+
+        VerticalLayout {
+            for row-index in root.rows: HorizontalLayout {
+                for column-index in root.columns: KeypadKey {
+                    property <int> key-index: row-index * root.columns + column-index;
+                    horizontal-stretch: 1;
+                    label: root.keys[self.key-index];
+                    is-backspace: self.key-index == root.keys.length - 1;
+                    has-right-line: column-index < root.columns - 1;
+                    has-bottom-line: row-index < root.rows - 1;
+                    pressed => {
+                        if self.is-backspace {
+                            root.backspace-pressed();
+                        } else {
+                            root.key-pressed(self.label);
+                        }
+                    }
+                }
+            }
+        }
+
+        Button {
+            text: root.done-text;
+            variant: ButtonVariant.dark;
+            radius: Theme.radius-8;
+            clicked => {
+                root.done-clicked();
+            }
+        }
+    }
+}

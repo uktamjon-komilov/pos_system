@@ -1,0 +1,6 @@
+// String helpers the Slint language lacks; implemented in Rust (app.rs).
+
+export global TextUtils {
+    pure callback drop-last-character(string) -> string;
+    pure callback is-blank(string) -> bool;
+}

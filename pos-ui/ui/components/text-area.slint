@@ -1,0 +1,34 @@
+// Borderless multi-line text input with a placeholder (Gravity TextArea "clear").
+
+import { Theme } from "../theme.slint";
+
+export component TextArea {
+    in-out property <string> text <=> input.text;
+    in property <string> placeholder;
+    callback edited(string);
+
+    min-height: Theme.comment-input-height;
+
+    Text {
+        y: Theme.space-8;
+        width: 100%;
+        text: root.placeholder;
+        visible: input.text == "";
+        font-size: Theme.font-size-body-1;
+        color: Theme.color-text-hint;
+        wrap: word-wrap;
+    }
+
+    input := TextInput {
+        y: Theme.space-8;
+        width: 100%;
+        height: root.height - Theme.space-8;
+        single-line: false;
+        wrap: word-wrap;
+        font-size: Theme.font-size-body-1;
+        color: Theme.color-text-primary;
+        edited => {
+            root.edited(self.text);
+        }
+    }
+}

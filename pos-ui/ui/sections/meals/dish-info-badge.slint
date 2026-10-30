@@ -1,0 +1,43 @@
+// Tappable card that opens the "Информация о блюде" page.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Card } from "../../components/card.slint";
+import { Icon } from "../../components/icon.slint";
+
+export component DishInfoBadge inherits Card {
+    pressable: true;
+
+    HorizontalLayout {
+        spacing: Theme.space-4;
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: Theme.space-10;
+
+            Text {
+                text: Strings.dish-info;
+                font-size: Theme.font-size-header-1;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+            }
+
+            Text {
+                text: Strings.dish-info-short;
+                font-size: Theme.font-size-body-2;
+                color: Theme.color-text-secondary;
+                wrap: word-wrap;
+            }
+        }
+
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                source: @image-url("../../../assets/icons/chevron-right.svg");
+                size: Theme.icon-size-20;
+                color: Theme.color-text-secondary;
+            }
+        }
+    }
+}

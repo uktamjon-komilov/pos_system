@@ -1,0 +1,21 @@
+// Horizontal hairline. `engraved` adds a white line underneath, the legacy
+// "double border" look between list sections and panel headers.
+
+import { Theme } from "../theme.slint";
+
+export component Divider {
+    in property <color> color: Theme.color-divider;
+    in property <bool> engraved: false;
+
+    VerticalLayout {
+        Rectangle {
+            height: Theme.border-thin;
+            background: root.color;
+        }
+
+        if root.engraved: Rectangle {
+            height: Theme.border-thin;
+            background: Theme.color-engrave-highlight;
+        }
+    }
+}

@@ -1,0 +1,73 @@
+// Tile of a modifier in the modifiers grid: name, price and portion count.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Badge } from "../../components/badge.slint";
+import { SelectionOutline } from "../../components/selection-outline.slint";
+import { ModifierCardData } from "meals-types.slint";
+
+export component ModifierCard inherits Rectangle {
+    in property <ModifierCardData> modifier;
+    in property <bool> selected;
+    callback clicked();
+
+    height: Theme.dish-card-height;
+    background: Theme.color-card;
+    border-width: Theme.border-dish-card;
+    border-color: Theme.color-card-border;
+    border-radius: Theme.radius-24;
+    transform-scale-x: touch.pressed ? Theme.pressed-scale : 100%;
+    transform-scale-y: self.transform-scale-x;
+    animate transform-scale-x { duration: Theme.duration-press; }
+
+    if root.selected: SelectionOutline {
+        target-width: root.width;
+        target-height: root.height;
+        corner-radius: Theme.radius-24;
+    }
+
+    VerticalLayout {
+        padding: Theme.border-dish-card + Theme.space-16;
+        spacing: Theme.space-16;
+
+        Text {
+            vertical-stretch: 1;
+            min-height: 0px;
+            text: root.modifier.name;
+            font-size: Theme.font-size-header-1;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-primary;
+            wrap: word-wrap;
+            overflow: elide;
+        }
+
+        VerticalLayout {
+            vertical-stretch: 0;
+            spacing: Theme.space-4;
+
+            Text {
+                text: Strings.price-with-currency(root.modifier.price-text);
+                font-size: Theme.font-size-subheader-1;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+            }
+
+            HorizontalLayout {
+                alignment: start;
+                Badge {
+                    text: Strings.pieces(root.modifier.limit-count);
+                    background: Colors.transparent;
+                    outline-color: Theme.color-pill-border;
+                    content-color: Theme.color-text-primary;
+                    radius: Theme.radius-6;
+                }
+            }
+        }
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}

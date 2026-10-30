@@ -1,0 +1,35 @@
+// Warning message box with an exclamation icon (Gravity Alert, filled, warning).
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+
+export component Alert inherits Rectangle {
+    in property <string> text;
+    in property <length> font-size: Theme.font-size-caption-2;
+
+    background: Theme.color-warning-background;
+    border-radius: Theme.radius-10;
+
+    HorizontalLayout {
+        padding: Theme.space-12;
+        spacing: Theme.space-12;
+
+        VerticalLayout {
+            alignment: center;
+            Icon {
+                source: @image-url("../../assets/icons/circle-exclamation-fill.svg");
+                size: Theme.icon-size-16;
+                color: Theme.color-text-warning;
+            }
+        }
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.text;
+            font-size: root.font-size;
+            color: Theme.color-text-warning;
+            vertical-alignment: center;
+            wrap: word-wrap;
+        }
+    }
+}

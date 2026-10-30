@@ -1,0 +1,82 @@
+// Right column of the modifiers tab: portion limit and stop-list switch.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { EmptyState } from "../../components/empty-state.slint";
+import { LimitForm, LimitFormAppearance } from "limit-form.slint";
+import { LimitSummaryCard } from "limit-summary-card.slint";
+import { MealsError } from "meals-types.slint";
+import { ModifiersStore } from "modifiers-store.slint";
+import { ToggleCard } from "toggle-card.slint";
+
+export component ModifierDetails inherits Rectangle {
+    if !ModifiersStore.has-selection: EmptyState {
+        icon: @image-url("../../../assets/icons/dish-empty-state.svg");
+        text: Strings.modifier-not-selected;
+    }
+
+    if ModifiersStore.has-selection: Flickable {
+        viewport-height: max(self.height, content.preferred-height);
+
+        content := VerticalLayout {
+            width: parent.width;
+            alignment: start;
+            padding: Theme.space-16;
+            spacing: Theme.space-8;
+
+            Text {
+                text: ModifiersStore.details.name;
+                font-size: Theme.font-size-header-2;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+            }
+
+            VerticalLayout {
+                padding-top: Theme.space-16;
+                spacing: Theme.space-4;
+
+                if ModifiersStore.is-editing-limit: LimitForm {
+                    appearance: LimitFormAppearance.metallic;
+                    initially-unlimited: ModifiersStore.details.is-unlimited;
+                    initial-count-text: ModifiersStore.details.is-unlimited ? "" : "\{ModifiersStore.details.limit-count}";
+                    label-font-size: Theme.font-size-body-2;
+                    alert-font-size: Theme.font-size-body-1;
+                    saving: ModifiersStore.is-saving-stock;
+                    cancelled => {
+                        ModifiersStore.is-editing-limit = false;
+                        ModifiersStore.error = MealsError.none;
+                    }
+                    saved(unlimited, count-text) => {
+                        ModifiersStore.limit-saved(unlimited, count-text);
+                    }
+                }
+
+                if !ModifiersStore.is-editing-limit: LimitSummaryCard {
+                    content-padding-top: Theme.space-12;
+                    content-padding-bottom: Theme.space-12;
+                    count: ModifiersStore.details.limit-count;
+                    edit-icon-size: Theme.icon-size-16;
+                    edit-clicked => {
+                        ModifiersStore.is-editing-limit = true;
+                        ModifiersStore.error = MealsError.none;
+                    }
+                }
+
+                ToggleCard {
+                    property <bool> is-on: ModifiersStore.details.is-in-stop-list;
+                    icon: self.is-on ? @image-url("../../../assets/icons/eye.svg") : @image-url("../../../assets/icons/xmark.svg");
+                    icon-size: Theme.icon-size-12;
+                    icon-background: self.is-on ? Theme.color-modifier-stop : Theme.color-tile-muted;
+                    icon-color: self.is-on ? Theme.color-text-inverted : Theme.color-text-secondary;
+                    title: self.is-on ? Strings.show-modifier : Strings.stop-list;
+                    checked: self.is-on;
+                    enabled: !ModifiersStore.is-saving-stock;
+                    toggled(enabled) => {
+                        ModifiersStore.stop-list-toggled(enabled);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,44 @@
+// Right column of the dishes tab. Empty state until a dish is chosen, then
+// two pages side by side: the main page and "Информация о блюде", which
+// slides in from the right (legacy smooth horizontal scroll).
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { EmptyState } from "../../components/empty-state.slint";
+import { DishInfoPage } from "dish-info-page.slint";
+import { DishMainPage } from "dish-main-page.slint";
+import { DishesStore } from "dishes-store.slint";
+
+export component DishDetails inherits Rectangle {
+    if !DishesStore.has-selection: EmptyState {
+        icon: @image-url("../../../assets/icons/dish-empty-state.svg");
+        text: Strings.dish-not-selected;
+    }
+
+    if DishesStore.has-selection: Rectangle {
+        property <bool> shows-info: false;
+        clip: true;
+
+        main-page := DishMainPage {
+            x: parent.shows-info ? -parent.width : 0;
+            width: parent.width;
+            height: parent.height;
+            animate x {
+                duration: Theme.duration-slide;
+                easing: ease-in-out;
+            }
+            info-requested => {
+                parent.shows-info = true;
+            }
+        }
+
+        DishInfoPage {
+            x: main-page.x + parent.width;
+            width: parent.width;
+            height: parent.height;
+            close-requested => {
+                parent.shows-info = false;
+            }
+        }
+    }
+}

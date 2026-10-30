@@ -1,0 +1,75 @@
+// Bar above the meals lists: tab switch, back / forward, home and search.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Button, ButtonVariant } from "../../components/button.slint";
+import { IconButtonPair } from "../../components/icon-button-pair.slint";
+import { SegmentedControl } from "../../components/segmented-control.slint";
+import { TextField } from "../../components/text-field.slint";
+import { MealsStore } from "meals-store.slint";
+import { MealsTab } from "meals-types.slint";
+
+export component TopNavigation {
+    HorizontalLayout {
+        spacing: Theme.space-2;
+
+        Rectangle {
+            horizontal-stretch: 0;
+            background: Theme.color-surface;
+
+            HorizontalLayout {
+                padding: Theme.space-16;
+                SegmentedControl {
+                    options: [Strings.tab-dishes, Strings.tab-modifiers];
+                    selected-index: MealsStore.active-tab == MealsTab.dishes ? 0 : 1;
+                    selected(option-index) => {
+                        MealsStore.tab-selected(option-index == 0 ? MealsTab.dishes : MealsTab.modifiers);
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            background: Theme.color-surface;
+
+            HorizontalLayout {
+                padding: Theme.space-16;
+                spacing: Theme.space-16;
+
+                HorizontalLayout {
+                    spacing: Theme.space-8;
+
+                    // Forward is always disabled in legacy too; kept for the look.
+                    IconButtonPair {
+                        first-icon: @image-url("../../../assets/icons/chevron-left.svg");
+                        second-icon: @image-url("../../../assets/icons/chevron-right.svg");
+                        first-enabled: MealsStore.can-go-back;
+                        second-enabled: false;
+                        first-clicked => {
+                            MealsStore.back-clicked();
+                        }
+                    }
+
+                    Button {
+                        variant: ButtonVariant.white;
+                        icon: @image-url("../../../assets/icons/house.svg");
+                        clicked => {
+                            MealsStore.home-clicked();
+                        }
+                    }
+                }
+
+                TextField {
+                    horizontal-stretch: 1;
+                    placeholder: Strings.search-placeholder;
+                    trailing-icon: @image-url("../../../assets/icons/magnifier.svg");
+                    text <=> MealsStore.search-text;
+                    edited(new-text) => {
+                        MealsStore.search-edited(new-text);
+                    }
+                }
+            }
+        }
+    }
+}

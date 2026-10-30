@@ -1,0 +1,39 @@
+// On/off switch (Gravity Switch "l" as restyled by the legacy CSS: wider
+// track, green gradient when on). It does not flip itself: the owner
+// receives `toggled(new-value)` and updates `checked`.
+
+import { Theme } from "../theme.slint";
+
+export component Toggle {
+    in property <bool> checked;
+    in property <bool> enabled: true;
+    callback toggled(bool);
+
+    width: Theme.switch-width;
+    height: Theme.switch-height;
+
+    Rectangle {
+        border-radius: Theme.radius-17;
+        background: root.checked ? Theme.gradient-green
+            : touch.has-hover ? Theme.color-switch-off-hover : Theme.color-switch-off;
+        border-width: root.checked ? Theme.border-thin : 0;
+        border-color: Theme.color-green-border;
+    }
+
+    Rectangle {
+        width: Theme.switch-knob-size;
+        height: Theme.switch-knob-size;
+        y: (root.height - self.height) / 2;
+        x: root.checked ? root.width - self.width - Theme.switch-knob-inset : Theme.switch-knob-inset;
+        border-radius: self.width / 2;
+        background: Theme.color-switch-knob;
+        animate x { duration: Theme.duration-hover; }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.toggled(!root.checked);
+        }
+    }
+}

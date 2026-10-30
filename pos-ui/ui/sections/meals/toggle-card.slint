@@ -1,0 +1,78 @@
+// Card with an icon tile, a title and a switch; optionally a note below a
+// divider while the switch is on (stop-list explanation).
+
+import { Theme } from "../../theme.slint";
+import { Card } from "../../components/card.slint";
+import { Divider } from "../../components/divider.slint";
+import { Icon } from "../../components/icon.slint";
+import { IconTile } from "../../components/icon-tile.slint";
+import { Toggle } from "../../components/toggle.slint";
+
+export component ToggleCard inherits Card {
+    in property <image> icon;
+    in property <color> icon-background;
+    in property <color> icon-color;
+    in property <length> icon-size: Theme.icon-size-16;
+    in property <string> title;
+    in property <bool> checked;
+    in property <bool> enabled: true;
+    in property <string> note;
+    callback toggled(bool);
+
+    spacing: Theme.space-12;
+
+    HorizontalLayout {
+        spacing: Theme.space-8;
+
+        VerticalLayout {
+            alignment: center;
+            IconTile {
+                icon: root.icon;
+                icon-size: root.icon-size;
+                icon-color: root.icon-color;
+                background: root.icon-background;
+            }
+        }
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.title;
+            font-size: Theme.font-size-subheader-3;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-primary;
+            vertical-alignment: center;
+            wrap: word-wrap;
+        }
+
+        VerticalLayout {
+            alignment: center;
+            Toggle {
+                checked: root.checked;
+                enabled: root.enabled;
+                toggled(new-value) => {
+                    root.toggled(new-value);
+                }
+            }
+        }
+    }
+
+    if root.checked && root.note != "": Divider { }
+
+    if root.checked && root.note != "": HorizontalLayout {
+        spacing: Theme.space-8;
+
+        Icon {
+            source: @image-url("../../../assets/icons/circle-exclamation-fill.svg");
+            size: Theme.icon-size-16;
+            color: Theme.color-text-complementary;
+        }
+
+        Text {
+            horizontal-stretch: 1;
+            text: root.note;
+            font-size: Theme.font-size-caption-2;
+            color: Theme.color-text-complementary;
+            wrap: word-wrap;
+        }
+    }
+}

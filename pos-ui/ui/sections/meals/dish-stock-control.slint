@@ -1,0 +1,65 @@
+// Stock controls of the selected dish: portion limit (view or edit),
+// go-list and stop-list switches.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { DishesStore } from "dishes-store.slint";
+import { LimitForm, LimitFormAppearance } from "limit-form.slint";
+import { MealsError } from "meals-types.slint";
+import { LimitSummaryCard } from "limit-summary-card.slint";
+import { ToggleCard } from "toggle-card.slint";
+
+export component DishStockControl {
+    property <bool> has-limit: DishesStore.details.has-portion-limit;
+
+    VerticalLayout {
+        spacing: Theme.space-4;
+
+        if root.has-limit && DishesStore.is-editing-limit: LimitForm {
+            appearance: LimitFormAppearance.plain;
+            initially-unlimited: DishesStore.details.is-unlimited;
+            initial-count-text: DishesStore.details.is-unlimited ? "" : "\{DishesStore.details.limit-count}";
+            saving: DishesStore.is-saving-stock;
+            cancelled => {
+                DishesStore.is-editing-limit = false;
+                DishesStore.error = MealsError.none;
+            }
+            saved(unlimited, count-text) => {
+                DishesStore.limit-saved(unlimited, count-text);
+            }
+        }
+
+        if root.has-limit && !DishesStore.is-editing-limit: LimitSummaryCard {
+            count: DishesStore.details.limit-count;
+            edit-clicked => {
+                DishesStore.is-editing-limit = true;
+                DishesStore.error = MealsError.none;
+            }
+        }
+
+        ToggleCard {
+            icon: @image-url("../../../assets/icons/thunderbolt-fill.svg");
+            icon-background: Theme.color-tile-dark;
+            icon-color: Theme.color-text-brand;
+            title: Strings.go-list;
+            checked: DishesStore.details.is-in-go-list;
+            enabled: !DishesStore.is-saving-stock;
+            toggled(enabled) => {
+                DishesStore.go-list-toggled(enabled);
+            }
+        }
+
+        ToggleCard {
+            icon: @image-url("../../../assets/icons/xmark.svg");
+            icon-background: self.checked ? Theme.color-danger : Theme.color-tile-muted;
+            icon-color: self.checked ? Theme.color-text-inverted : Theme.color-text-secondary;
+            title: Strings.stop-list;
+            note: Strings.stop-list-info;
+            checked: DishesStore.details.is-in-stop-list;
+            enabled: !DishesStore.is-saving-stock;
+            toggled(enabled) => {
+                DishesStore.stop-list-toggled(enabled);
+            }
+        }
+    }
+}

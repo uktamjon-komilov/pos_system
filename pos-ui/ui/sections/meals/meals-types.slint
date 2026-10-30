@@ -1,0 +1,61 @@
+// Display-ready data the Rust side hands to the meals screens. Prices are
+// already formatted; everything else is raw so Strings can phrase it.
+
+export enum MealsTab { dishes, modifiers }
+
+// Why the last request or input failed; Strings.error-text words it.
+export enum MealsError { none, load-failed, save-failed, invalid-limit }
+
+export struct CategoryCardData {
+    id: string,
+    name: string,
+    dishes-count: int,
+}
+
+export struct DishCardData {
+    id: string,
+    // Dish name, or the size name ("30 см") for a variant.
+    title: string,
+    price-text: string,
+    is-variant: bool,
+    variant-count: int,
+    is-in-go-list: bool,
+    is-in-stop-list: bool,
+    // 0 hides the badge (unlimited or nothing set).
+    limit-count: int,
+    cooking-minutes: int,
+}
+
+export struct DishDetailsData {
+    id: string,
+    name: string,
+    description: string,
+    price-text: string,
+    variant-count: int,
+    is-in-go-list: bool,
+    is-in-stop-list: bool,
+    is-unlimited: bool,
+    limit-count: int,
+    // False for weight-based dishes: legacy hides the limit card for them.
+    has-portion-limit: bool,
+}
+
+export struct ModifierCardData {
+    id: string,
+    name: string,
+    price-text: string,
+    limit-count: int,
+}
+
+export struct ModifierDetailsData {
+    id: string,
+    name: string,
+    is-in-stop-list: bool,
+    is-unlimited: bool,
+    limit-count: int,
+}
+
+export struct CommentData {
+    id: string,
+    text: string,
+}

@@ -1,0 +1,129 @@
+// Scrollable left column of the dishes tab: categories ("Меню"), dishes of
+// the current category, or the variants of the open dish. Asks for the next
+// page when scrolled near the bottom (legacy infinite scroll).
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Divider } from "../../components/divider.slint";
+import { Loader } from "../../components/loader.slint";
+import { CategoryGrid } from "category-grid.slint";
+import { DishGrid } from "dish-grid.slint";
+import { DishesStore } from "dishes-store.slint";
+import { ListTitle } from "list-title.slint";
+import { MealsError } from "meals-types.slint";
+
+export component DishList inherits Rectangle {
+    property <bool> shows-variants: DishesStore.variants.length > 0;
+    property <bool> shows-categories: !self.shows-variants && DishesStore.categories.length > 0;
+    property <bool> shows-dishes: !self.shows-variants && DishesStore.dishes.length > 0;
+    property <bool> has-content: self.shows-variants || self.shows-categories || self.shows-dishes;
+    property <string> list-name: DishesStore.category-name == "" ? Strings.all-dishes : DishesStore.category-name;
+
+    property <length> distance-to-bottom: flick.viewport-height + flick.viewport-y - flick.height;
+    property <bool> wants-next-page: DishesStore.has-next-page && !DishesStore.is-loading-next-page
+        && self.distance-to-bottom < Theme.list-loader-height;
+    property <int> list-revision: DishesStore.list-revision;
+
+    changed wants-next-page => {
+        if self.wants-next-page {
+            DishesStore.next-page-requested();
+        }
+    }
+
+    changed list-revision => {
+        flick.viewport-y = 0;
+    }
+
+    flick := Flickable {
+        viewport-height: max(self.height, content.preferred-height);
+
+        content := VerticalLayout {
+            width: flick.width;
+            alignment: start;
+
+            if root.shows-categories: VerticalLayout {
+                padding-left: Theme.space-16;
+                padding-right: Theme.space-16;
+                padding-bottom: Theme.space-16;
+                spacing: Theme.space-16;
+
+                ListTitle {
+                    text: Strings.menu;
+                }
+
+                CategoryGrid {
+                    categories: DishesStore.categories;
+                    category-clicked(category-id) => {
+                        DishesStore.category-clicked(category-id);
+                    }
+                }
+            }
+
+            if root.shows-categories: Divider {
+                color: Theme.color-section-line;
+            }
+
+            if root.shows-categories && root.shows-dishes: Divider {
+                color: Theme.color-engrave-highlight;
+            }
+
+            if root.shows-dishes: VerticalLayout {
+                padding: Theme.space-16;
+                padding-top: root.shows-categories ? Theme.space-16 : 0;
+                spacing: Theme.space-16;
+
+                ListTitle {
+                    text: root.list-name;
+                }
+
+                DishGrid {
+                    dishes: DishesStore.dishes;
+                    selected-id: DishesStore.selected-dish-id;
+                    dish-clicked(dish-id) => {
+                        DishesStore.dish-clicked(dish-id);
+                    }
+                }
+            }
+
+            if root.shows-variants: VerticalLayout {
+                padding-left: Theme.space-16;
+                padding-right: Theme.space-16;
+                padding-bottom: Theme.space-16;
+                spacing: Theme.space-16;
+
+                ListTitle {
+                    text: Strings.dish-variants;
+                }
+
+                DishGrid {
+                    dishes: DishesStore.variants;
+                    selected-id: DishesStore.selected-variant-id;
+                    dish-clicked(dish-id) => {
+                        DishesStore.variant-clicked(dish-id);
+                    }
+                }
+            }
+
+            if DishesStore.has-next-page && !root.shows-variants: Rectangle {
+                height: Theme.list-loader-height;
+                if DishesStore.is-loading-next-page: Loader { }
+            }
+        }
+    }
+
+    if !root.has-content && DishesStore.is-loading-first-page: Loader { }
+
+    // After a failed load the alert above the list explains the empty area.
+    if !root.has-content && !DishesStore.is-loading-first-page
+        && DishesStore.error != MealsError.load-failed: Text {
+        width: 100%;
+        height: 100%;
+        text: Strings.no-dishes-in-category(root.list-name);
+        font-size: Theme.font-size-header-1;
+        font-weight: Theme.font-weight-semibold;
+        color: Theme.color-text-secondary;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        wrap: word-wrap;
+    }
+}

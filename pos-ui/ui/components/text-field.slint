@@ -1,0 +1,69 @@
+// Single-line text input with the metallic look of legacy Gravity inputs,
+// a placeholder and an optional trailing icon.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+import { MetallicSurface } from "metallic-surface.slint";
+
+export component TextField {
+    in-out property <string> text <=> input.text;
+    in property <string> placeholder;
+    in property <image> trailing-icon;
+    out property <bool> has-focus: input.has-focus;
+    callback edited(string);
+    // Fired when the field gains focus (legacy opened its keypad on focus).
+    callback focus-gained();
+
+    public function release-focus() {
+        input.clear-focus();
+    }
+
+    height: Theme.control-height-xl;
+
+    MetallicSurface { }
+
+    HorizontalLayout {
+        padding-left: Theme.space-12;
+        padding-right: Theme.space-12;
+        spacing: Theme.space-8;
+
+        Rectangle {
+            horizontal-stretch: 1;
+
+            Text {
+                width: 100%;
+                text: root.placeholder;
+                visible: input.text == "";
+                font-size: Theme.font-size-body-2;
+                color: Theme.color-text-hint;
+                vertical-alignment: center;
+                overflow: elide;
+            }
+
+            input := TextInput {
+                width: 100%;
+                single-line: true;
+                font-size: Theme.font-size-body-2;
+                color: Theme.color-text-primary;
+                vertical-alignment: center;
+                edited => {
+                    root.edited(self.text);
+                }
+                changed has-focus => {
+                    if self.has-focus {
+                        root.focus-gained();
+                    }
+                }
+            }
+        }
+
+        if root.trailing-icon.width > 0: VerticalLayout {
+            alignment: center;
+            Icon {
+                source: root.trailing-icon;
+                size: Theme.icon-size-16;
+                color: Theme.color-text-primary;
+            }
+        }
+    }
+}

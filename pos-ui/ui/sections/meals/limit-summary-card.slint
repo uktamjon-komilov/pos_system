@@ -1,0 +1,64 @@
+// Read-only view of a portion limit ("Установлено" / "Осталось") with an
+// edit button. Legacy shows the same number twice: the API has no
+// "remaining" value.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Button, ButtonVariant } from "../../components/button.slint";
+import { Card } from "../../components/card.slint";
+
+component LimitValue {
+    in property <string> label;
+    in property <int> count;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.space-4;
+
+        Text {
+            text: root.label;
+            font-size: Theme.font-size-body-2;
+            color: Theme.color-text-secondary;
+        }
+
+        Text {
+            text: root.count;
+            font-size: Theme.font-size-header-2;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-primary;
+        }
+    }
+}
+
+export component LimitSummaryCard inherits Card {
+    in property <int> count;
+    in property <length> edit-icon-size: Theme.icon-size-20;
+    callback edit-clicked();
+
+    HorizontalLayout {
+        alignment: space-between;
+
+        LimitValue {
+            label: Strings.limit-set;
+            count: root.count;
+        }
+
+        LimitValue {
+            label: Strings.limit-left;
+            count: root.count;
+        }
+
+        VerticalLayout {
+            alignment: center;
+            Button {
+                variant: ButtonVariant.gray;
+                icon: @image-url("../../../assets/icons/pencil.svg");
+                icon-size: root.edit-icon-size;
+                content-color: Theme.color-text-icon-black;
+                clicked => {
+                    root.edit-clicked();
+                }
+            }
+        }
+    }
+}

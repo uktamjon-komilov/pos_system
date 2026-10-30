@@ -1,0 +1,48 @@
+// Two facts under the dish name: price and number of variants.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+
+component Fact {
+    in property <string> label;
+    in property <string> value;
+
+    VerticalLayout {
+        spacing: Theme.space-8;
+
+        Text {
+            text: root.label;
+            font-size: Theme.font-size-body-2;
+            color: Theme.color-text-secondary;
+        }
+
+        Text {
+            text: root.value;
+            font-size: Theme.font-size-subheader-3;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-primary;
+            wrap: word-wrap;
+        }
+    }
+}
+
+export component DishQuickInfo {
+    in property <string> price-text;
+    in property <int> variant-count;
+
+    HorizontalLayout {
+        spacing: Theme.space-16;
+
+        Fact {
+            horizontal-stretch: 1;
+            label: Strings.price;
+            value: root.price-text;
+        }
+
+        Fact {
+            horizontal-stretch: 1;
+            label: Strings.variants;
+            value: root.variant-count > 0 ? "\{root.variant-count}" : Strings.not-available;
+        }
+    }
+}

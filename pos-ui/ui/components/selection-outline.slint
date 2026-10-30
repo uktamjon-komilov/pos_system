@@ -1,0 +1,19 @@
+// Ring drawn just outside an element's edges, like the CSS `outline` legacy
+// uses for the selected card. Place it as a child of the selected element
+// and pass that element's size.
+
+import { Theme } from "../theme.slint";
+
+export component SelectionOutline inherits Rectangle {
+    in property <length> corner-radius;
+    in property <length> target-width;
+    in property <length> target-height;
+
+    x: -Theme.border-outline;
+    y: -Theme.border-outline;
+    width: root.target-width + 2 * Theme.border-outline;
+    height: root.target-height + 2 * Theme.border-outline;
+    border-width: Theme.border-outline;
+    border-color: Theme.color-selected-outline;
+    border-radius: root.corner-radius + Theme.border-outline;
+}

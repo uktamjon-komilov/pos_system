@@ -1,0 +1,42 @@
+// Dark vertical navigation bar with the logo on top.
+
+import { Theme } from "../theme.slint";
+import { NavItem, Section, SidebarItem } from "sidebar-item.slint";
+
+export component Sidebar inherits Rectangle {
+    in property <[NavItem]> items;
+    in property <Section> active-section;
+    callback item-selected(Section);
+
+    width: Theme.sidebar-width;
+    background: Theme.color-display;
+
+    VerticalLayout {
+        padding-top: Theme.space-28;
+        padding-left: Theme.space-8;
+        padding-right: Theme.space-8;
+        spacing: Theme.space-8;
+        alignment: start;
+
+        HorizontalLayout {
+            height: Theme.sidebar-logo-row-height;
+            alignment: center;
+            VerticalLayout {
+                alignment: center;
+                Image {
+                    source: @image-url("../../assets/icons/logo.svg");
+                    width: Theme.logo-width;
+                    height: Theme.logo-height;
+                }
+            }
+        }
+
+        for item in root.items: SidebarItem {
+            item: item;
+            active: item.section == root.active-section;
+            clicked => {
+                root.item-selected(item.section);
+            }
+        }
+    }
+}

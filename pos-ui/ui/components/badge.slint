@@ -1,0 +1,43 @@
+// Small status label (Gravity Label "xs"): either a square icon badge or a
+// short text, with configurable fill, outline and corner radius.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+
+export component Badge {
+    in property <string> text;
+    in property <image> icon;
+    in property <color> background: Theme.color-label-neutral;
+    in property <color> outline-color: Colors.transparent;
+    in property <color> content-color: Theme.color-text-complementary;
+    in property <length> radius: Theme.radius-3;
+    in property <length> font-size: Theme.font-size-caption-2;
+    in property <length> icon-size: Theme.icon-size-12;
+
+    property <bool> is-icon-only: root.text == "";
+
+    height: Theme.label-height;
+    min-width: root.is-icon-only ? root.height : label.preferred-width + 2 * Theme.space-8;
+
+    Rectangle {
+        background: root.background;
+        border-radius: root.radius;
+        border-width: root.outline-color == Colors.transparent ? 0 : Theme.border-thin;
+        border-color: root.outline-color;
+    }
+
+    if root.is-icon-only: Icon {
+        source: root.icon;
+        size: root.icon-size;
+        color: root.content-color;
+    }
+
+    label := Text {
+        visible: !root.is-icon-only;
+        text: root.text;
+        font-size: root.font-size;
+        color: root.content-color;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}

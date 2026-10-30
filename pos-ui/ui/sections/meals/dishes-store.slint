@@ -1,0 +1,52 @@
+// State and events of the dishes tab. Rust (controllers/dishes/) fills the
+// properties and implements the callbacks; Slint only displays and forwards.
+
+import { Strings } from "../../strings.slint";
+import { CategoryCardData, CommentData, DishCardData, DishDetailsData, MealsError } from "meals-types.slint";
+
+export global DishesStore {
+    // ---- List -------------------------------------------------------------
+    in property <[CategoryCardData]> categories;
+    in property <[DishCardData]> dishes;
+    // Non-empty while a dish with variants is open; replaces the two lists above.
+    in property <[DishCardData]> variants;
+    // Empty at the menu root, where the list is titled "Все блюда".
+    in property <string> category-name;
+    in property <bool> is-loading-first-page;
+    in property <bool> has-next-page;
+    in property <bool> is-loading-next-page;
+    // Bumped whenever a new list replaces the old one, to scroll back to the top.
+    in property <int> list-revision;
+
+    // ---- Selection and details -------------------------------------------
+    in property <bool> has-selection;
+    in property <string> selected-dish-id;
+    // The highlighted card in the variants list (the dish itself if no variant).
+    in property <string> selected-variant-id;
+    in property <DishDetailsData> details;
+    in-out property <bool> is-editing-limit;
+    // A go-list, stop-list or limit change is being saved.
+    in property <bool> is-saving-stock;
+
+    // ---- Errors -----------------------------------------------------------
+    // Set by Rust when a request or the limit input fails; cleared on the
+    // next action.
+    in-out property <MealsError> error;
+    out property <string> error-text: Strings.error-text(error);
+
+    // ---- Comment templates -----------------------------------------------
+    in property <[CommentData]> comments;
+    in-out property <string> comment-draft;
+    in property <bool> is-saving-comment;
+
+    callback category-clicked(string);
+    callback dish-clicked(string);
+    callback variant-clicked(string);
+    callback next-page-requested();
+    callback go-list-toggled(bool);
+    callback stop-list-toggled(bool);
+    // (unlimited, count text as typed)
+    callback limit-saved(bool, string);
+    callback comment-added(string);
+    callback comment-deleted(string);
+}

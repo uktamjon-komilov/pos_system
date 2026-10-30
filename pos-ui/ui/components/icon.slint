@@ -1,0 +1,13 @@
+// Monochrome SVG icon tinted with a single color. The SVG files are drawn in
+// black; `colorize` plays the role of `currentColor` in the legacy React icons.
+
+import { Theme } from "../theme.slint";
+
+export component Icon inherits Image {
+    in property <length> size: Theme.icon-size-16;
+    in property <color> color: Theme.color-text-primary;
+    width: root.size;
+    height: root.size;
+    colorize: root.color;
+    image-fit: contain;
+}

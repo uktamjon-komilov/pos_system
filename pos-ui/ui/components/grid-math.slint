@@ -1,0 +1,21 @@
+// Position math for fixed-column grids of equal-height cells. Slint has no
+// CSS grid, so grids place repeated cards with these functions.
+
+export global GridMath {
+    public pure function cell-width(total-width: length, columns: int, gap: length) -> length {
+        (total-width - (columns - 1) * gap) / columns
+    }
+
+    public pure function cell-x(index: int, columns: int, cell-width: length, gap: length) -> length {
+        mod(index, columns) * (cell-width + gap)
+    }
+
+    public pure function cell-y(index: int, columns: int, row-height: length, gap: length) -> length {
+        floor(index / columns) * (row-height + gap)
+    }
+
+    public pure function total-height(count: int, columns: int, row-height: length, gap: length) -> length {
+        let rows = ceil(count / columns);
+        rows == 0 ? 0px : rows * row-height + (rows - 1) * gap
+    }
+}

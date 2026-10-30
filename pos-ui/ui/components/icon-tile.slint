@@ -1,0 +1,22 @@
+// Rounded square with a centered icon, used in front of settings rows.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+
+export component IconTile inherits Rectangle {
+    in property <image> icon;
+    in property <color> icon-color: Theme.color-text-secondary;
+    in property <length> icon-size: Theme.icon-size-16;
+
+    width: Theme.icon-tile-size;
+    height: Theme.icon-tile-size;
+    border-radius: Theme.radius-12;
+    background: Theme.color-tile-muted;
+    animate background { duration: Theme.duration-hover; }
+
+    Icon {
+        source: root.icon;
+        size: root.icon-size;
+        color: root.icon-color;
+    }
+}

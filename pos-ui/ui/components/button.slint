@@ -1,0 +1,96 @@
+// Push button with the legacy looks: "metallic" gold / white / gray, Gravity
+// raised / brand, the dark keypad button and a flat icon button.
+// Shows text, an icon, or both; icon-only buttons are square.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+import { Loader } from "loader.slint";
+import { MetallicSurface } from "metallic-surface.slint";
+
+export enum ButtonVariant { gold, white, gray, raised, brand, dark, flat }
+
+export component Button {
+    in property <string> text;
+    in property <image> icon;
+    in property <length> icon-size: Theme.icon-size-20;
+    in property <ButtonVariant> variant: ButtonVariant.gold;
+    in property <bool> enabled: true;
+    in property <bool> loading: false;
+    in property <length> radius: Theme.radius-16;
+    in property <color> content-color: root.variant == ButtonVariant.dark ? Theme.color-text-inverted
+        : root.variant == ButtonVariant.gray ? Theme.color-text-hint
+        : root.variant == ButtonVariant.flat ? Theme.color-text-secondary
+        : Theme.color-text-icon-black;
+    callback clicked();
+
+    property <bool> is-interactive: root.enabled && !root.loading;
+    property <bool> has-icon: root.icon.width > 0;
+    property <bool> is-metallic: root.variant == ButtonVariant.gold
+        || root.variant == ButtonVariant.white || root.variant == ButtonVariant.gray;
+
+    height: Theme.control-height-xl;
+    min-width: root.text == "" ? root.height : content.preferred-width + 2 * Theme.space-16;
+    transform-scale-x: touch.pressed && root.is-interactive ? Theme.pressed-scale : 100%;
+    transform-scale-y: self.transform-scale-x;
+    animate transform-scale-x { duration: Theme.duration-press; }
+
+    if root.is-metallic: MetallicSurface {
+        corner-radius: root.radius;
+        fill: root.variant == ButtonVariant.gold ? Theme.gradient-gold
+            : root.variant == ButtonVariant.gray ? Theme.color-surface
+            : Theme.color-card;
+        outline-color: root.variant == ButtonVariant.gold ? Theme.color-gold-border : Theme.color-card-border;
+    }
+
+    if !root.is-metallic: Rectangle {
+        border-radius: root.radius;
+        background: root.variant == ButtonVariant.dark ? Theme.color-tile-dark
+            : root.variant == ButtonVariant.brand ? (touch.has-hover ? Theme.color-brand-hover : Theme.color-brand)
+            : root.variant == ButtonVariant.raised ? (touch.has-hover ? Theme.color-raised-hover : Theme.color-raised)
+            : Colors.transparent;
+    }
+
+    // Gravity "flat" buttons tint on hover; the metallic kit reuses that.
+    Rectangle {
+        border-radius: root.radius;
+        background: touch.has-hover && root.is-interactive && root.variant != ButtonVariant.brand
+            && root.variant != ButtonVariant.raised ? Theme.color-hover-overlay : Colors.transparent;
+        animate background { duration: Theme.duration-hover; }
+    }
+
+    content := HorizontalLayout {
+        alignment: center;
+        spacing: Theme.space-8;
+        visible: !root.loading;
+
+        if root.has-icon: VerticalLayout {
+            alignment: center;
+            Icon {
+                source: root.icon;
+                size: root.icon-size;
+                color: root.enabled ? root.content-color : Theme.color-text-hint;
+            }
+        }
+
+        // Created only with text: a hidden Text would still take space and
+        // push an icon-only button's icon off centre.
+        if root.text != "": Text {
+            text: root.text;
+            font-size: Theme.font-size-body-2;
+            font-weight: Theme.font-weight-regular;
+            color: root.enabled ? root.content-color : Theme.color-text-hint;
+            vertical-alignment: center;
+        }
+    }
+
+    if root.loading: Loader {
+        bar-color: root.content-color;
+    }
+
+    touch := TouchArea {
+        enabled: root.is-interactive;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

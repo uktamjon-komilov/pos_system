@@ -1,0 +1,71 @@
+// Tile of a menu category: name (max two lines) and how many dishes it holds.
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Icon } from "../../components/icon.slint";
+import { PillLabel } from "../../components/pill-label.slint";
+import { CategoryCardData } from "meals-types.slint";
+
+export component CategoryCard inherits Rectangle {
+    in property <CategoryCardData> category;
+    callback clicked();
+
+    property <bool> has-dishes: root.category.dishes-count > 0;
+
+    height: Theme.category-card-height;
+    background: Theme.color-card;
+    border-width: Theme.border-thin;
+    border-color: Theme.color-card-border;
+    border-radius: Theme.radius-24;
+    transform-scale-x: touch.pressed ? Theme.pressed-scale : 100%;
+    transform-scale-y: self.transform-scale-x;
+    animate transform-scale-x { duration: Theme.duration-press; }
+
+    VerticalLayout {
+        padding: Theme.border-thin + Theme.space-16;
+        spacing: Theme.space-16;
+
+        Text {
+            vertical-stretch: 1;
+            min-height: 0px;
+            text: root.category.name;
+            font-size: Theme.font-size-category-name;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-primary;
+            wrap: word-wrap;
+            overflow: elide;
+        }
+
+        HorizontalLayout {
+            height: Theme.control-height-flat;
+
+            VerticalLayout {
+                alignment: center;
+                PillLabel {
+                    icon: @image-url("../../../assets/icons/dish-filled.svg");
+                    text: root.has-dishes ? Strings.dishes-count(root.category.dishes-count) : Strings.no-dishes;
+                }
+            }
+
+            Rectangle {
+                horizontal-stretch: 1;
+            }
+
+            // Legacy shows a flat chevron button here; the whole card is the
+            // touch target, so a plain icon behaves the same.
+            if root.has-dishes: Rectangle {
+                width: Theme.control-height-flat;
+                Icon {
+                    source: @image-url("../../../assets/icons/chevron-right.svg");
+                    size: Theme.icon-size-20;
+                }
+            }
+        }
+    }
+
+    touch := TouchArea {
+        clicked => {
+            root.clicked();
+        }
+    }
+}

@@ -1,0 +1,47 @@
+// Main page of the dish details: name, price / variants, link to the dish
+// info, stock controls and comment templates.
+
+import { Theme } from "../../theme.slint";
+import { CommentTemplates } from "comment-templates.slint";
+import { DishInfoBadge } from "dish-info-badge.slint";
+import { DishQuickInfo } from "dish-quick-info.slint";
+import { DishStockControl } from "dish-stock-control.slint";
+import { DishesStore } from "dishes-store.slint";
+
+export component DishMainPage inherits Rectangle {
+    callback info-requested();
+
+    Flickable {
+        viewport-height: max(self.height, content.preferred-height);
+
+        content := VerticalLayout {
+            width: parent.width;
+            alignment: start;
+            padding: Theme.space-16;
+            spacing: Theme.space-16;
+
+            Text {
+                text: DishesStore.details.name;
+                font-size: Theme.font-size-header-2;
+                font-weight: Theme.font-weight-semibold;
+                color: Theme.color-text-primary;
+                wrap: word-wrap;
+            }
+
+            DishQuickInfo {
+                price-text: DishesStore.details.price-text;
+                variant-count: DishesStore.details.variant-count;
+            }
+
+            DishInfoBadge {
+                clicked => {
+                    root.info-requested();
+                }
+            }
+
+            DishStockControl { }
+
+            CommentTemplates { }
+        }
+    }
+}

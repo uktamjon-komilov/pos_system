@@ -1,0 +1,6 @@
+# Workspace root. Only `pos-ui` exists today; future crates (API client,
+# printing, sync, ...) are added to `members` when they are actually written.
+[workspace]
+# "3" picks dependency versions compatible with each crate's rust-version.
+resolver = "3"
+members = ["pos-ui"]

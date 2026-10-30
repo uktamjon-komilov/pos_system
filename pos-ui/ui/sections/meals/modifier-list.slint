@@ -1,0 +1,66 @@
+// Left column of the modifiers tab: title and a grid whose column count
+// follows the window width (legacy Tailwind breakpoints).
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { GridMath } from "../../components/grid-math.slint";
+import { Loader } from "../../components/loader.slint";
+import { ListTitle } from "list-title.slint";
+import { ModifierCard } from "modifier-card.slint";
+import { ModifiersStore } from "modifiers-store.slint";
+
+component ModifierGrid {
+    in property <int> columns;
+    callback modifier-clicked(string);
+
+    property <length> gap: Theme.space-4;
+    property <length> cell-width: GridMath.cell-width(root.width, root.columns, root.gap);
+
+    height: GridMath.total-height(ModifiersStore.modifiers.length, root.columns, Theme.dish-card-height, root.gap);
+
+    for modifier[index] in ModifiersStore.modifiers: ModifierCard {
+        x: GridMath.cell-x(index, root.columns, root.cell-width, root.gap);
+        y: GridMath.cell-y(index, root.columns, Theme.dish-card-height, root.gap);
+        width: root.cell-width;
+        modifier: modifier;
+        selected: modifier.id == ModifiersStore.selected-id;
+        clicked => {
+            root.modifier-clicked(modifier.id);
+        }
+    }
+}
+
+export component ModifierList inherits Rectangle {
+    in property <length> window-width;
+
+    property <int> columns: root.window-width >= Theme.modifier-breakpoint-wide ? Theme.modifier-grid-columns-wide
+        : root.window-width >= Theme.modifier-breakpoint-medium ? Theme.modifier-grid-columns-medium
+        : Theme.modifier-grid-columns-narrow;
+
+    // Legacy forgot to make this list scrollable; here it scrolls.
+    Flickable {
+        viewport-height: max(self.height, content.preferred-height);
+
+        content := VerticalLayout {
+            width: parent.width;
+            alignment: start;
+            padding-left: Theme.space-16;
+            padding-right: Theme.space-16;
+            padding-bottom: Theme.space-16;
+            spacing: Theme.space-24;
+
+            ListTitle {
+                text: Strings.modifiers;
+            }
+
+            ModifierGrid {
+                columns: root.columns;
+                modifier-clicked(modifier-id) => {
+                    ModifiersStore.modifier-clicked(modifier-id);
+                }
+            }
+        }
+    }
+
+    if ModifiersStore.is-loading && ModifiersStore.modifiers.length == 0: Loader { }
+}

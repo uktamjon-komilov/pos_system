@@ -1,0 +1,28 @@
+// Stand-in content for sections that are not ported yet.
+
+import { Theme } from "../theme.slint";
+import { Strings } from "../strings.slint";
+
+export component SectionPlaceholder inherits Rectangle {
+    in property <string> title;
+
+    VerticalLayout {
+        alignment: center;
+        spacing: Theme.space-12;
+
+        Text {
+            text: root.title;
+            font-size: Theme.font-size-header-2;
+            font-weight: Theme.font-weight-semibold;
+            color: Theme.color-text-complementary;
+            horizontal-alignment: center;
+        }
+
+        Text {
+            text: Strings.section-coming-soon;
+            font-size: Theme.font-size-body-2;
+            color: Theme.color-text-secondary;
+            horizontal-alignment: center;
+        }
+    }
+}

@@ -1,0 +1,97 @@
+// Portion limit editor: unlimited switch, count input, cancel / save.
+// Dishes use the plain Gravity look, modifiers the metallic one (as legacy).
+
+import { Theme } from "../../theme.slint";
+import { Strings } from "../../strings.slint";
+import { Alert } from "../../components/alert.slint";
+import { Button, ButtonVariant } from "../../components/button.slint";
+import { Toggle } from "../../components/toggle.slint";
+import { LimitCountInput } from "limit-count-input.slint";
+
+export enum LimitFormAppearance { plain, metallic }
+
+export component LimitForm {
+    in property <LimitFormAppearance> appearance: LimitFormAppearance.plain;
+    in property <bool> initially-unlimited;
+    in property <string> initial-count-text;
+    in property <bool> saving;
+    in property <length> label-font-size: Theme.font-size-body-1;
+    in property <length> alert-font-size: Theme.font-size-caption-2;
+    callback cancelled();
+    // (unlimited, count text as typed)
+    callback saved(bool, string);
+
+    property <bool> is-metallic: root.appearance == LimitFormAppearance.metallic;
+    property <bool> unlimited: root.initially-unlimited;
+    property <string> count-text: root.initial-count-text;
+
+    Rectangle {
+        background: root.is-metallic ? Theme.color-card : Theme.color-filled-card;
+        border-radius: root.is-metallic ? Theme.radius-24 : Theme.radius-16;
+        border-width: root.is-metallic ? Theme.border-thin : 0;
+        border-color: Theme.color-card-border;
+        drop-shadow-offset-x: -Theme.shadow-offset;
+        drop-shadow-offset-y: -Theme.shadow-offset;
+        drop-shadow-blur: Theme.shadow-blur;
+        drop-shadow-color: root.is-metallic ? Theme.color-shadow-light : Colors.transparent;
+    }
+
+    VerticalLayout {
+        padding: Theme.space-16;
+        spacing: Theme.space-12;
+
+        HorizontalLayout {
+            spacing: Theme.space-4;
+
+            Text {
+                horizontal-stretch: 1;
+                text: Strings.limit-unlimited;
+                font-size: root.label-font-size;
+                color: Theme.color-text-primary;
+                vertical-alignment: center;
+            }
+
+            Toggle {
+                checked: root.unlimited;
+                toggled(new-value) => {
+                    root.unlimited = new-value;
+                }
+            }
+        }
+
+        if root.unlimited: Alert {
+            text: Strings.unlimited-portions-set;
+            font-size: root.alert-font-size;
+        }
+
+        if !root.unlimited: LimitCountInput {
+            text <=> root.count-text;
+        }
+
+        HorizontalLayout {
+            padding-top: Theme.space-4;
+            spacing: Theme.space-10;
+
+            Button {
+                horizontal-stretch: 1;
+                height: root.is-metallic ? Theme.control-height-xl : Theme.control-height-form;
+                text: Strings.cancel;
+                variant: root.is-metallic ? ButtonVariant.white : ButtonVariant.raised;
+                clicked => {
+                    root.cancelled();
+                }
+            }
+
+            Button {
+                horizontal-stretch: 1;
+                height: root.is-metallic ? Theme.control-height-xl : Theme.control-height-form;
+                text: Strings.save;
+                variant: root.is-metallic ? ButtonVariant.gold : ButtonVariant.brand;
+                loading: root.saving;
+                clicked => {
+                    root.saved(root.unlimited, root.count-text);
+                }
+            }
+        }
+    }
+}

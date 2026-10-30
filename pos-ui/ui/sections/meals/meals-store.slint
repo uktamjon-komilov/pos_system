@@ -1,0 +1,17 @@
+// State and events shared by both meals tabs (tab bar, back/home, search).
+// Rust (controllers/meals_controller.rs) implements the callbacks.
+
+import { MealsTab } from "meals-types.slint";
+
+export global MealsStore {
+    in-out property <MealsTab> active-tab: MealsTab.dishes;
+    in-out property <string> search-text;
+    in property <bool> can-go-back;
+
+    // The meals page was (re)opened: legacy resets everything at that point.
+    callback opened();
+    callback tab-selected(MealsTab);
+    callback search-edited(string);
+    callback back-clicked();
+    callback home-clicked();
+}

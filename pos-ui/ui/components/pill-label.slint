@@ -1,0 +1,40 @@
+// Outlined pill with an optional icon and a short text (legacy PillLabel "dark").
+
+import { Theme } from "../theme.slint";
+import { Icon } from "icon.slint";
+
+export component PillLabel {
+    in property <string> text;
+    in property <image> icon;
+    in property <color> color: Theme.color-text-primary;
+
+    height: Theme.pill-height;
+
+    Rectangle {
+        border-radius: Theme.radius-8;
+        border-width: Theme.border-thin;
+        border-color: Theme.color-pill-border;
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.space-4;
+        padding-right: Theme.space-4;
+        spacing: Theme.space-4;
+
+        if root.icon.width > 0: VerticalLayout {
+            alignment: center;
+            Icon {
+                source: root.icon;
+                size: Theme.icon-size-16;
+                color: root.color;
+            }
+        }
+
+        Text {
+            text: root.text;
+            font-size: Theme.font-size-body-1;
+            color: root.color;
+            vertical-alignment: center;
+        }
+    }
+}
